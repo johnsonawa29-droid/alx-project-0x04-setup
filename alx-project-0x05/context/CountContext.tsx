@@ -1,35 +1,32 @@
-import { createContext, useContext,  useState, ReactNode } from "react"
+import React, { createContext, useState, ReactNode } from "react";
 
+// Define the TypeScript interface for the context
 interface CountContextProps {
-  count: number
-  increment: () => void
-  decrement: () => void
+  count: number;
+  increment: () => void;
+  decrement: () => void;
 }
 
-export const CountContext = createContext<CountContextProps | undefined>(undefined)
+// Create the context with default values (to satisfy TS)
+export const CountContext = createContext<CountContextProps>({
+  count: 0,
+  increment: () => {},
+  decrement: () => {},
+});
 
-export const CountProvider = ({ children }: { children: ReactNode}) => {
+interface CountProviderProps {
+  children: ReactNode;
+}
 
-  const [count, setCount] = useState<number>(0)
+export const CountProvider: React.FC<CountProviderProps> = ({ children }) => {
+  const [count, setCount] = useState<number>(0);
 
-  const increment = () => setCount((count ) =>count + 1)
-  const decrement = () => setCount((count) => count > 0 ? count - 1 : 0)
+  const increment = () => setCount((prev) => prev + 1);
+  const decrement = () => setCount((prev) => prev - 1);
 
   return (
     <CountContext.Provider value={{ count, increment, decrement }}>
       {children}
     </CountContext.Provider>
-  )
-}
-
-
-
-export const useCount = () => {
-  const context = useContext(CountContext)
-
-  if (!context) {
-    throw new Error("useCount must be within a Count Provider")
-  }
-
-  return context
-}
+  );
+};
